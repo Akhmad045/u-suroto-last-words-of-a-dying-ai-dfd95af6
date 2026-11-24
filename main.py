@@ -29,7 +29,7 @@ def validate(text):
         return "too long: %d chars" % len(text)
     if "\n" in text or "\r" in text:
         return "multi-line"
-    if any(ord(ch) < 0x20 and ch not in ("\t",) for ch in text):
+    if any((ord(ch) < 0x20 or ord(ch) == 0x7F) and ch != "\t" for ch in text):
         return "control character"
     return None
 
@@ -56,6 +56,7 @@ def self_test():
         ("one\rtwo", "multi-line"),
         ("  padded line  ", None),
         ("bad\x07char", "control character"),
+        ("bad\x7fchar", "control character"),
         ("x", None),
         ("y" * 140, None),
         (ENTRY, None),
